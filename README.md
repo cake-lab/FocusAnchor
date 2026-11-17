@@ -1,7 +1,5 @@
 # FocusAnchor
 
-Anonymous code release for a paper under review.
-
 FocusAnchor predicts metric depth from a focal stack and its all-in-focus image. A CNN encodes each slice. A focus volume scores every slice at every pixel. A GRU then refines inverse depth by reading this volume, starting from the relative depth of a frozen Depth Anything V2 (DAv2) ViT-L. In every refinement step the DAv2 depth is refitted locally to the current estimate, weighted by a predicted confidence, and fed back to the GRU. The state is inverse depth divided by the nearest focus plane, so the same weights run on any camera and any number of slices.
 
 ## Layout

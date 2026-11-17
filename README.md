@@ -54,16 +54,6 @@ uv run python src/cli.py test --config src/configs/test_ZEDD.yaml
 
 Each run prints a "Final Evaluation Results" table and logs the same numbers to TensorBoard as `test/*`. The YAML builds the model and `--ckpt_path` only swaps the weights.
 
-| Benchmark | Test config | FocusAnchor AbsRel | FocusAnchor-flex AbsRel |
-|---|---|---|---|
-| ZEDD, validation (50 scenes) | `test_ZEDD.yaml` | 0.0731 | 0.0732 |
-| Infinigen Defocus | `test_Infinigen.yaml` | 0.0717 | 0.0708 |
-| iBims-1 (100 images) | `test_iBims.yaml` | 0.035 | 0.039 |
-| HAMMER (775 frames) | `test_HAMMER.yaml` | 0.010 | 0.012 |
-| ARKitScenes (5,594 images) | `test_ARKitScenes.yaml` | 0.0163 | 0.0198 |
-| NYU Depth v2, test | `test_NYU.yaml` | 0.0513 | 0.0428 |
-| DDFF-12, test (fine-tuned) | `test_DDFF12.yaml` | 0.1025 | 0.1048 |
-
 - FocusAnchor-flex: add `--ckpt_path checkpoints/FocusAnchor-RS.ckpt`. On DDFF12 add `--ckpt_path checkpoints/FocusAnchor-RS-DDFF12.ckpt`.
 - NYU in-domain variant: `test_NYU.yaml` with `--ckpt_path checkpoints/FocusAnchor-NYU.ckpt` gives AbsRel 0.0077.
 - ZEDD test: the test ground truth is hidden, so the benchmark server scores it. `PYTHONPATH=src uv run python src/dataloader/ZEDD/submit.py checkpoints/FocusAnchor.ckpt OUT_DIR --root ZEDD_ROOT` writes `OUT_DIR/zedd_outputs.zip`. Check it with `uv run python src/dataloader/ZEDD/check_format.py --zip OUT_DIR/zedd_outputs.zip`.

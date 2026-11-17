@@ -1,0 +1,47 @@
+# pytorch_lightning==2.6.1
+# DDFF12 fine-tune. Run it with src/finetune.py, which loads the start weights from $INIT_CKPT (README).
+seed_everything: 0
+trainer:
+  accelerator: auto
+  devices: 1
+  precision: null  # fp32 + TF32 outside the model; the model runs bf16 autocast inside (model.mixed_precision)
+  max_steps: 20000
+  check_val_every_n_epoch: 10
+  log_every_n_steps: 25
+  gradient_clip_val: 1.0
+  logger:
+    class_path: pytorch_lightning.loggers.TensorBoardLogger
+    init_args:
+      save_dir: 'reports/logs'
+      name: 'ddff12_ft'
+  callbacks:
+    - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+      init_args:
+        logging_interval: 'step'
+    # Keep ModelCheckpoint last: --trainer.callbacks.init_args.* on the command line sets the last callback.
+    - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+      init_args:
+        monitor: 'val/absRel'
+        mode: 'min'
+        save_top_k: 3
+        save_last: true
+        # Off, or the "/" in val/absRel makes a nested folder per save.
+        auto_insert_metric_name: false
+        dirpath: 'checkpoints_best/ddff12_ft'
+        filename: 'epoch{epoch:03d}-absRel{val/absRel:.4f}'
+model:
+  invert_depth: False  # batch is DDFF12 disparity, already inverse depth
+  lr: 2e-4
+  wd: 1e-5
+  dinov2_encoder: vitl
+  train_iters: 12
+  valid_iters: 16
+  scale_iters: 4
+  prior_fusion: input
+data:
+  class_path: dataloader.dataset.DDFF12DataModule
+  init_args:
+    ddff12_data_root: '/project/dff_trainVal.h5'
+    batch_size: 16
+    num_workers: 8
+    n_stack: 5

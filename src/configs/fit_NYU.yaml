@@ -1,0 +1,57 @@
+# pytorch_lightning==2.6.1
+seed_everything: 0
+trainer:
+  accelerator: auto
+  # 2 GPUs -> DDP. BatchNorm in cnet and fnet is synced across GPUs, as in DEFOM's recipes.
+  strategy: ddp
+  devices: auto
+  sync_batchnorm: true
+  precision: null  # fp32 + TF32 outside the model; the model runs bf16 autocast inside (model.mixed_precision)
+  max_steps: 60000
+  check_val_every_n_epoch: 1
+  log_every_n_steps: 25
+  gradient_clip_val: 1.0
+  logger:
+    class_path: pytorch_lightning.loggers.TensorBoardLogger
+    init_args:
+      save_dir: 'reports/logs'
+      name: 'nyu_focusanchor'
+  callbacks:
+    - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+      init_args:
+        logging_interval: 'step'
+    # Keep ModelCheckpoint last: --trainer.callbacks.init_args.* on the command line sets the last callback.
+    - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+      init_args:
+        monitor: 'val/absRel'
+        mode: 'min'
+        save_top_k: -1  # every epoch, as in the paper runs (1.6 GB each)
+        save_last: true
+        # Off, or the "/" in val/absRel makes a nested folder per save.
+        auto_insert_metric_name: false
+        dirpath: 'checkpoints_best/nyu_focusanchor'
+        filename: 'epoch{epoch:02d}-absRel{val/absRel:.4f}'
+model:
+  invert_depth: True  # batch is in metres; the model works in 1/depth
+  lr: 2e-4
+  wd: 1e-5
+  dinov2_encoder: vitl
+  train_iters: 12
+  valid_iters: 16
+  scale_iters: 4
+  # True: train on FOSSA's random zoom, f-number, PSF shape and focus planes, 15x15 kernel.
+  # Validation keeps the HybridDepth render (NYU camera, GT-range planes, 7x7).
+  # False with slice_noise 0.0: the in-domain NYU variant.
+  fossa_synthesis: True
+  slice_noise: 0.01  # fresh noise on every slice
+  prior_fusion: input  # the refitted prior is a GRU input
+  # FocusAnchor-flex: 2-5 random slices per training batch, then a 20k fine-tune (README).
+  # train_n_stack: [2, 5]
+data:
+  class_path: dataloader.dataset.NYUDataModule
+  init_args:
+    nyuv2_data_root: '/project/nyu_depth_v2'
+    img_size: [480, 640]  # native size; the loader center-crops to 384x512
+    batch_size: 4  # per GPU. 4 fits 24GB at 5 slices; use 3 for n_stack 10.
+    num_workers: 4  # the focal stack is rendered on the GPU, not in the workers
+    n_stack: 5

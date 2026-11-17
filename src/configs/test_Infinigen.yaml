@@ -1,0 +1,28 @@
+# pytorch_lightning==2.6.1
+seed_everything: 0
+trainer:
+  accelerator: auto
+  devices: 1  # one GPU, so the test set is not split across processes
+  logger:
+    class_path: pytorch_lightning.loggers.TensorBoardLogger
+    init_args:
+      save_dir: 'reports/logs'
+      name: 'infinigen_test'
+model:
+  # Infinigen is in metres. The model only sees planes divided by the nearest one.
+  invert_depth: True
+  lr: 2e-4
+  wd: 1e-5
+  dinov2_encoder: vitl
+  prior_fusion: input
+  train_iters: 12
+  valid_iters: 16
+  scale_iters: 4
+data:
+  class_path: dataloader.dataset.InfinigenDataModule
+  init_args:
+    infinigen_root: '/project/infinigen_defocus'
+    num_workers: 4
+# Zero-shot. FocusAnchor, the NYU zero-shot recipe with confidence fusion, last epoch.
+# FocusAnchor-flex: --ckpt_path checkpoints/FocusAnchor-RS.ckpt.
+ckpt_path: checkpoints/FocusAnchor.ckpt

@@ -1,0 +1,28 @@
+# pytorch_lightning==2.6.1
+seed_everything: 0
+trainer:
+  accelerator: auto
+  devices: 1  # one GPU, so the test set is not split across processes
+  logger:
+    class_path: pytorch_lightning.loggers.TensorBoardLogger
+    init_args:
+      save_dir: 'reports/logs'
+      name: 'ddff12_test'
+model:
+  invert_depth: False  # batch is DDFF12 disparity, already inverse depth
+  lr: 2e-4
+  wd: 1e-5
+  dinov2_encoder: vitl
+  prior_fusion: input
+  train_iters: 12
+  valid_iters: 16
+  scale_iters: 4
+data:
+  class_path: dataloader.dataset.DDFF12DataModule
+  init_args:
+    ddff12_data_root: '/project/dff_trainVal.h5'
+    batch_size: 1  # per GPU
+    num_workers: 8
+# FocusAnchor fine-tuned on DDFF12 from checkpoints/FocusAnchor.ckpt, last epoch.
+# FocusAnchor-flex: --ckpt_path checkpoints/FocusAnchor-RS-DDFF12.ckpt.
+ckpt_path: checkpoints/FocusAnchor-DDFF12.ckpt

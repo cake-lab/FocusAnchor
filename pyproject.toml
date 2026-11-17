@@ -1,0 +1,26 @@
+[project]
+name = "focusanchor"
+version = "0.1.0"
+description = "FocusAnchor: metric depth from a focal stack and a depth foundation model."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "setuptools",
+    "wheel",
+    "ninja",
+    "numpy<2",
+    "h5py",
+    "imageio",
+    "matplotlib",
+    "pillow",
+    "scipy",
+    "torch==2.11.0",
+    "torchvision==0.26.0",
+    "torchaudio==2.11.0",
+    "pytorch-lightning==2.6.1",
+    "tensorboard",
+    "jsonargparse[signatures]",
+    "opencv-python-headless==4.11.0.86",
+]
+
+[tool.uv]
+package = false

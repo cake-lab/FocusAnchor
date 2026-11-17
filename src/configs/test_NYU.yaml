@@ -1,0 +1,30 @@
+# pytorch_lightning==2.6.1
+seed_everything: 0
+trainer:
+  accelerator: auto
+  devices: 1  # one GPU, so the test set is not split across processes
+  logger:
+    class_path: pytorch_lightning.loggers.TensorBoardLogger
+    init_args:
+      save_dir: 'reports/logs'
+      name: 'nyu_test'
+model:
+  invert_depth: True  # batch is in metres; the model works in 1/depth
+  lr: 2e-4
+  wd: 1e-5
+  dinov2_encoder: vitl
+  prior_fusion: input
+  train_iters: 12
+  valid_iters: 16
+  scale_iters: 4
+data:
+  class_path: dataloader.dataset.NYUDataModule
+  init_args:
+    nyuv2_data_root: '/project/nyu_depth_v2'
+    img_size: [480, 640]  # native size; the loader center-crops to 384x512
+    batch_size: 1  # per GPU.
+    num_workers: 4  # the focal stack is rendered on the GPU, not in the workers
+    n_stack: 5
+# FocusAnchor, default training, last epoch. FocusAnchor-flex: --ckpt_path checkpoints/FocusAnchor-RS.ckpt.
+# In-domain variant: --ckpt_path checkpoints/FocusAnchor-NYU.ckpt.
+ckpt_path: checkpoints/FocusAnchor.ckpt

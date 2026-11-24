@@ -52,7 +52,7 @@ class FocusAnchorModule(pl.LightningModule):
         loss_gamma: float = 0.9,
         volume_loss_weight: float = 1.0,
         # Train on FOSSA's random cameras and focus planes (batch.py:renderFossaBatch).
-        # Validation and test keep the HybridDepth render.
+        # Validation and test keep the fixed render (batch.py:renderSyntheticFocalStack).
         fossa_synthesis: bool = False,
         # Largest sigma of Gaussian sensor noise added to each rendered slice in training,
         # in [0, 1] units (batch.py:normalizeStack). Kills the render's noise-as-focus cue
@@ -180,6 +180,15 @@ class FocusAnchorModule(pl.LightningModule):
             self.io.plotDiagnostics(depth_batch.rgb_aif, init, predictions[-1], depth_batch.depth_gt,
                                   depth_batch.mask, metrics=metrics, tag="test", step=batch_idx,
                                   experiment=self.experiment())
+
+    def on_load_checkpoint(self, checkpoint: dict) -> None:
+        # The released checkpoints leave out the frozen DAv2, which __init__ already loads
+        # from checkpoints/depth_anything_v2_<encoder>.pth. Fill those weights in here, so the
+        # strict load still checks every other weight.
+        state = checkpoint["state_dict"]
+        for name, value in self.state_dict().items():
+            if ".depth_anything.pretrained." in name or ".depth_anything.depth_head." in name:
+                state.setdefault(name, value)
 
     def on_fit_start(self) -> None:
         trainable = sum(p.numel() for p in self.parameters() if p.requires_grad)

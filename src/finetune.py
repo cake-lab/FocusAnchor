@@ -12,7 +12,8 @@ from model.focusAnchor import FocusAnchorModule
 init = os.environ["INIT_CKPT"]
 torch.set_float32_matmul_precision("high")
 cli = LightningCLI(FocusAnchorModule, datamodule_class=None, run=False)
-sd = torch.load(init, map_location="cpu", weights_only=False)["state_dict"]
-cli.model.load_state_dict(sd, strict=True)
+ckpt = torch.load(init, map_location="cpu", weights_only=False)
+cli.model.on_load_checkpoint(ckpt)  # fills in the frozen DAv2 that released checkpoints leave out
+cli.model.load_state_dict(ckpt["state_dict"], strict=True)
 print("loaded weights from", init, "lr", cli.model.hparams.lr, flush=True)
 cli.trainer.fit(cli.model, cli.datamodule)

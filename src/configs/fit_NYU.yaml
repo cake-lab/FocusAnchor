@@ -40,7 +40,7 @@ model:
   valid_iters: 16
   scale_iters: 4
   # True: train on FOSSA's random zoom, f-number, PSF shape and focus planes, 15x15 kernel.
-  # Validation keeps the HybridDepth render (NYU camera, GT-range planes, 7x7).
+  # Validation keeps the fixed render (NYU camera, GT-range planes, 7x7).
   # False with slice_noise 0.0: the in-domain NYU variant.
   fossa_synthesis: True
   slice_noise: 0.01  # fresh noise on every slice

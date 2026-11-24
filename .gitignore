@@ -9,6 +9,7 @@ __pycache__/
 /reports/results/*
 !/reports/results/.gitkeep
 checkpoints_best/
+checkpoints/.cache/
 
 # Weights and data
 *.ckpt

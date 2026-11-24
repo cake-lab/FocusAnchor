@@ -48,11 +48,14 @@ Put all weights in `checkpoints/`.
 | `FocusAnchor-DDFF12.ckpt` | FocusAnchor fine-tuned on DDFF12 |
 | `FocusAnchor-RS-DDFF12.ckpt` | FocusAnchor-flex fine-tuned on DDFF12 |
 
+Two commands download everything into `checkpoints/`. They use `uvx`, which comes with `uv`:
+
 ```bash
-for f in FocusAnchor FocusAnchor-RS FocusAnchor-NYU FocusAnchor-DDFF12 FocusAnchor-RS-DDFF12; do
-  curl -L -o checkpoints/$f.ckpt https://huggingface.co/AshkanGanj/FocusAnchor/resolve/main/$f.ckpt
-done
+uvx --from huggingface_hub hf download AshkanGanj/FocusAnchor --include "*.ckpt" --local-dir checkpoints
+uvx --from huggingface_hub hf download depth-anything/Depth-Anything-V2-Large depth_anything_v2_vitl.pth --local-dir checkpoints
 ```
+
+To get one model only, name its file instead of `--include`, e.g. `uvx --from huggingface_hub hf download AshkanGanj/FocusAnchor FocusAnchor.ckpt --local-dir checkpoints`.
 
 ## Test
 

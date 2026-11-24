@@ -138,12 +138,7 @@ DEFOM-Stereo: Jiang et al., CVPR 2025. Depth Anything V2: Yang et al., NeurIPS 2
 ## Citation
 
 ```bibtex
-@article{ganj2026focusanchor,
-  title   = {FocusAnchor: Zero-Shot Metric Depth by Anchoring a Depth Foundation Prior to Focus Cues},
-  author  = {Ganj, Ashkan and Su, Hang and Guo, Tian},
-  journal = {arXiv preprint},
-  year    = {2026}
-}
+comming soon
 ```
 
 ## License

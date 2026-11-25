@@ -2,7 +2,7 @@
 
 Official code of *FocusAnchor: Zero-Shot Metric Depth by Anchoring a Depth Foundation Prior to Focus Cues*, by Ashkan Ganj, Hang Su and Tian Guo.
 
-[Project page](https://cake.wpi.edu/FocusAnchor-website/) | [Weights](https://huggingface.co/AshkanGanj/FocusAnchor)
+[Paper](https://arxiv.org/abs/2611.32970) | [Project page](https://cake.wpi.edu/FocusAnchor-website/) | [Weights](https://huggingface.co/AshkanGanj/FocusAnchor)
 
 FocusAnchor predicts metric depth from a focal stack and its all-in-focus image. A CNN encodes each slice. A focus volume scores every slice at every pixel. A GRU then refines inverse depth by reading this volume, starting from the relative depth of a frozen Depth Anything V2 (DAv2) ViT-L. In every refinement step the DAv2 depth is refitted locally to the current estimate, weighted by a predicted confidence, and fed back to the GRU. The state is inverse depth divided by the nearest focus plane, so the same weights run on any camera and any number of slices.
 
@@ -141,11 +141,14 @@ DEFOM-Stereo: Jiang et al., CVPR 2025. Depth Anything V2: Yang et al., NeurIPS 2
 ## Citation
 
 ```bibtex
-@article{ganj2026focusanchor,
-  title   = {FocusAnchor: Zero-Shot Metric Depth by Anchoring a Depth Foundation Prior to Focus Cues},
-  author  = {Ganj, Ashkan and Su, Hang and Guo, Tian},
-  journal = {arXiv preprint},
-  year    = {2026}
+@misc{ganj2026focusanchorzeroshotmetricdepth,
+      title={FocusAnchor: Zero-Shot Metric Depth by Anchoring a Depth Foundation Prior to Focus Cues},
+      author={Ashkan Ganj and Hang Su and Tian Guo},
+      year={2026},
+      eprint={2611.32970},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2611.32970},
 }
 ```
 
